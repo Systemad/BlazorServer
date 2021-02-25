@@ -1,0 +1,50 @@
+﻿@page "/button"
+
+<div class="row">
+    <div class="col-xl-6">
+        <div class="row">
+            <div class="col-xl-6">
+                <h4>Button with text</h4>
+                <RadzenButton Text="Button" Style="margin-bottom: 20px; width: 150px" />
+            </div>
+            <div class="col-xl-6">
+                <h4>Button with text and icon</h4>
+                <RadzenButton Text="Button" Icon="account_circle" Style="margin-bottom: 20px; width: 150px" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xl-6">
+                <h4>Button with icon</h4>
+                <RadzenButton Icon="account_circle" Style="margin-bottom: 20px; width: 80px" />
+            </div>
+            <div class="col-xl-6">
+                <h4>Button with image</h4>
+                <RadzenButton Image="images/radzen-nuget.png" ButtonStyle="ButtonStyle.Light" Style="margin-bottom: 20px; width: 80px" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xl-6">
+                <h4>Button with content</h4>
+                <RadzenButton Image="images/radzen-nuget.png" ButtonStyle="ButtonStyle.Light" Style="margin-bottom: 20px; width: 200px">
+                    Some text
+                    <RadzenImage Path="images/radzen-nuget.png" Style="width:20px;margin-left: 10px;" />
+                </RadzenButton>
+            </div>
+            <div class="col-xl-6">
+                <h4>Disabled Button</h4>
+                <RadzenButton Disabled="true" Text="Button" Style="margin-bottom: 20px; width: 150px" />
+            </div>
+        </div>
+        <h4>Button styles</h4>
+        <div class="row">
+            <div class="col">
+                <RadzenButton style="margin: 0 1rem 1rem 0" Text="Primary" ButtonStyle="ButtonStyle.Primary" />
+                <RadzenButton style="margin: 0 1rem 1rem 0" Text="Secondary" ButtonStyle="ButtonStyle.Secondary" />
+                <RadzenButton style="margin: 0 1rem 1rem 0" Text="Light" ButtonStyle="ButtonStyle.Light" />
+                <RadzenButton style="margin: 0 1rem 1rem 0" Text="Danger" ButtonStyle="ButtonStyle.Danger" />
+                <RadzenButton style="margin: 0 1rem 1rem 0" Text="Info" ButtonStyle="ButtonStyle.Info" />
+                <RadzenButton style="margin-bottom: 16px"   Text="Warning" ButtonStyle="ButtonStyle.Warning" />
+            </div>
+        </div>
+    </div>
+</div>

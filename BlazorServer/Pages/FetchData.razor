@@ -1,116 +1,85 @@
 ﻿@page "/fetchdata"
+
+@inject MudBlazor.ISnackbar snackBar
+
 @using BlazorServer.Models
 @using BlazorServer.Data
+@inject WeatherService weatherService
 
-@inject WeatherServices Service
+<MudCard Elevation="25">
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">Add / Edit Weather</MudText>
+        </CardHeaderContent>
+    </MudCardHeader>
+    <MudCardContent>
+        <MudTextField @bind-Value="WeatherDay.Temperature" Label="Temperature" Variant="Variant.Text" Margin="Margin.Normal"></MudTextField>
+        <br />
+        <MudButton Variant="Variant.Filled" Color="Color.Success" OnClick="Save">Save Weather</MudButton>
+    </MudCardContent>
+</MudCard>
+<br />
+<MudTable Elevation="25" Items="GetWeathers()" Filter="new Func<WeatherDay, bool>(Search)" @bind-weather="WeatherDay">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">WeatherDays</MudText>
+        <MudToolBarSpacer />
+        <MudTextField @bind-Value="searchString" Placeholder="Search for weather..." Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>First Name</MudTh>
+        <MudTh>Last Name</MudTh>
+        <MudTh>Phone Number</MudTh>
+        <MudTh>Actions</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Id">@context.WeatherId</MudTd>
+        <MudTd DataLabel="LastName">@context.Temperature</MudTd>
+        <MudTd DataLabel="PhoneNumber">@context.DateTime</MudTd>
+        <MudTd DataLabel="">
+            <MudFab @onclick="@(()=>Edit(@context.WeatherId))" Color="Color.Primary" Icon="@Icons.Material.Filled.Edit" Size="Size.Small" IconSize="Size.Small" />
+            <MudFab @onclick="@(()=>Delete(@context.WeatherId))" Color="Color.Secondary" Icon="@Icons.Material.Filled.Delete" Size="Size.Small" IconSize="Size.Small" />
+        </MudTd>
+    </RowTemplate>
+</MudTable>
 
-<div class="container">
-
-    <div class="row bg-light">
-        <table class="table table-bordered">
-            <thead class="thead-dark">
-                <tr>
-                    <th>Weather Id</th>
-                    <th>Week Day</th>
-                    <th>Temperature</th>
-                    <th>Date</th>
-                    <th>Delete weather</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (_weathers.Any())
-                {
-                    @foreach (var weather in _weathers)
-                    {
-                        <tr @onclick="(() => SetWeatherForUpdate(weather))">
-                            <td>@weather.WeatherId</td>
-                            <td>@weather.Temperature</td>
-                            <td>@weather.DateTime</td>
-                            <td><button class="btn btn-danger" @onclick="(() => DeleteWeather(weather))">Delete</button></td>
-                        </tr>
-                    }
-                }
-                else
-                {
-                    <tr><td colspan="6"><strong>No weather available</strong></td></tr>
-                }
-            </tbody>
-        </table>
-    </div>
-
-    <div class="row m-5">
-        <div class="col-5 bg-light m-2 justify-content-start">
-            <div class="p-3 mb-3 bg-primary text-white text-center">Add New Weather</div>
-            <EditForm Model="@NewWeatherDay">
-                <div class="form-group">
-                    <label for="Temperature">Temperature</label>
-                    <input type="text" id="Temperature" class="form-control" @bind="@NewWeatherDay.Temperature" />
-                </div>
-                
-                <div class="text-center p-3 mb-3">
-                    <button class="btn btn-info" @onclick="AddNewWeather"> Add Weather</button>
-                </div>
-            </EditForm>
-        </div>
-
-        <div class="col-5 bg-light m-2 justify-content-end">
-            <div class="p-3 mb-1 bg-primary text-white text-center">Update Weather</div>
-
-            <EditForm Model="@_updateWeatherDay">
-                <div class="form-group">
-                    <label for="Temperature">Temperature</label>
-                    <input type="text" id="temperature" class="form-control" @bind="@_updateWeatherDay.Temperature" />
-                </div>
-
-                <div class="text-center p-3 mb-3">
-                    <button class="btn btn-info" @onclick="UpdateWeatherData"> Update Weather</button>
-                </div>
-            </EditForm>
-        </div>
-    </div>
-</div>
-
-
-@code {
-
-    List<WeatherDay> _weathers = new List<WeatherDay>();
-
+@code{
+    private string searchString = "";
+    private WeatherDay WeatherDay = new WeatherDay();
+    private List<WeatherDay> WeatherDays = new List<WeatherDay>();
     protected override async Task OnInitializedAsync()
     {
-        await RefreshWeathers();
+        GetWeathers();
     }
-
-    private async Task RefreshWeathers()
+    private List<WeatherDay> GetWeathers()
     {
-        _weathers = await Service.GetWeatherAsync();
+        WeatherDays = weatherService.GetWeathers();
+        return WeatherDays;
     }
-
-
-    public WeatherDay NewWeatherDay { get; set; } = new WeatherDay();
-
-    private async Task AddNewWeather()
+    private bool Search(WeatherDay weatherDay)
     {
-        NewWeatherDay.DateTime = DateTime.Now;
-        await Service.AddWeatherAsync(NewWeatherDay);
-        NewWeatherDay = new WeatherDay();
-        await RefreshWeathers();
+        if (string.IsNullOrWhiteSpace(searchString)) return true;
+        if (weatherDay.WeatherId.ToString().Contains(searchString, StringComparison.OrdinalIgnoreCase)
+            || weatherDay.Temperature.ToString().Contains(searchString, StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+        return false;
     }
-
-    WeatherDay _updateWeatherDay = new WeatherDay();
-    private void SetWeatherForUpdate(WeatherDay weatherDay)
+    private void Save()
     {
-        _updateWeatherDay = weatherDay;
+        weatherService.SaveWeather(WeatherDay);
+        WeatherDay = new WeatherDay();
+        snackBar.Add("WeatherDay Saved.", Severity.Success);
+        GetWeathers();
     }
-
-    private async Task UpdateWeatherData()
+    private void Edit(int id)
     {
-        await Service.UpdateWeatherAsync(_updateWeatherDay);
-        await RefreshWeathers();
+        WeatherDay = WeatherDays.FirstOrDefault(c => c.WeatherId == id);
     }
-
-    private async Task DeleteWeather(WeatherDay weatherDay)
+    private void Delete(int id)
     {
-        await Service.DeleteWeatherAsync(weatherDay);
-        await RefreshWeathers();
+        weatherService.DeleteWeather(id);
+        snackBar.Add("WeatherDay Deleted.", Severity.Success);
+        GetWeathers();
     }
 }

@@ -42,7 +42,7 @@ namespace BlazorServer
             
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddScoped<WeatherServices>();
+            services.AddScoped<WeatherService>();
             services.AddMudServices();
         }
 

@@ -27,7 +27,7 @@ namespace BlazorServer.Data
             //    .ValueGeneratedOnAdd();
             
             base.OnModelCreating(modelBuilder);
-            FakeData.GenerateWeather(27);
+            //FakeData.GenerateWeather(27);
             modelBuilder.Entity<WeatherDay>().HasData(FakeData.WeatherDays);
         }
 

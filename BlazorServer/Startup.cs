@@ -12,7 +12,7 @@ using Microsoft.Extensions.Hosting;
 using BlazorServer.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using Radzen;
+using MudBlazor.Services;
 
 namespace BlazorServer
 {
@@ -43,10 +43,7 @@ namespace BlazorServer
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddScoped<WeatherServices>();
-            services.AddScoped<DialogService>();
-            services.AddScoped<NotificationService>();
-            services.AddScoped<TooltipService>();
-            services.AddScoped<ContextMenuService>();
+            services.AddMudServices();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
